@@ -43,7 +43,7 @@ POIT_Final_project/
 ## Setup & Usage
 
 1. **Arduino:**
-   - Upload `sketch_may03a.ino` to your Arduino board.
+   - Upload `regulator.ino` to your Arduino board.
    - Connect LEDs to pins 9 and 10, and LDR to A0.
 
 2. **Python Backend:**
