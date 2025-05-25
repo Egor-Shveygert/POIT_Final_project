@@ -23,8 +23,7 @@ POIT_Final_project/
 │   ├── index.html        # Main web interface (single-page app)
 │   ├── main.js           # Frontend logic (Chart.js, Socket.IO, etc.)
 │   └── main.css          # Custom styles
-├── sketch_may03a/
-│   └── sketch_may03a.ino # Arduino firmware (PI controller)
+├── regulator.ino          # Arduino firmware (PI controller)
 ├── data/
 │   ├── archive.db        # SQLite database (auto-generated)
 │   └── logs.json         # JSON log file (auto-generated)
