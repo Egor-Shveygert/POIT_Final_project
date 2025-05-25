@@ -1,4 +1,3 @@
-
 <!doctype html>
 <html lang="en">
 <head>
@@ -21,7 +20,7 @@
 
     body { font-family: system-ui, sans-serif; margin: 0; padding: 0 1rem; }
 
-    /* generic buttons ---------------------------------------------- */
+    /* generic buttons */
     .btn {
       padding: .45rem 1.25rem;
       border: 0;
@@ -37,7 +36,7 @@
     .btn.outline    { background: #fff; color: var(--blue); border: 2px solid var(--blue); }
     .btn.outline:hover { background: var(--blue); color: #fff; }
 
-    /* TAB bar ------------------------------------------------------- */
+    /* tab bar */
     .tabs { display: flex; gap: .5rem; margin: .75rem 0 1.25rem; }
     
 	.tab-btn {
@@ -53,16 +52,16 @@
     .tab-btn:hover  { background: var(--grey-dark); }
     .tab-btn.active { background: var(--blue-dark); color: #fff; }
 
-    /* TAB content --------------------------------------------------- */
+    /* tab content */
     .tab-content { display: none; }
     .tab-content.active { display: block; }
 
-    /* layout helpers ------------------------------------------------ */
+    /* layout helpers */
     .ctrl-row { display: flex; flex-wrap: wrap; gap: .6rem; align-items: center; margin-bottom: 1rem; }
     fieldset { border: 1px solid var(--grey-dark); border-radius: .75rem; padding: 1rem 1.2rem; margin-bottom: 1.5rem; }
     legend   { padding: 0 .4rem; font-weight: 600; }
 
-    /* table --------------------------------------------------------- */
+    /* table */
     #log-wrapper { max-height: 280px; overflow: auto; }
     table { border-collapse: collapse; width: 100%; font-size: .9rem; }
     th, td { border: 1px solid #ccc; padding: .25rem .4rem; text-align: right; }
@@ -74,18 +73,18 @@
 </head>
 
 <body>
-  <!-- TAB bar -->
+  <!-- tab bar -->
   <div class="tabs">
     <button class="tab-btn active" data-target="tab-controls">Controls</button>
     <button class="tab-btn"        data-target="tab-gauge">Gauge</button>
     <button class="tab-btn"        data-target="tab-graph">Graph</button>
   </div>
 
-  <!-- CONTROLS TAB -->
+  <!-- controls tab -->
   <div class="tab-content active" id="tab-controls">
     <h1>Photo‑resistor regulation</h1>
 
-    <!-- communication block --------------------------------------- -->
+    <!-- communication block -->
     <fieldset>
       <legend>Communication</legend>
       <div class="ctrl-row">
@@ -94,7 +93,7 @@
       </div>
     </fieldset>
 
-    <!-- data acquisition block ------------------------------------ -->
+    <!-- data acquisition block -->
     <fieldset>
       <legend>Data capture</legend>
       <div class="ctrl-row">
@@ -108,13 +107,13 @@
     </fieldset>
   </div>
 
-  <!-- GAUGE TAB -->
+  <!-- gauge tab -->
   <div class="tab-content" id="tab-gauge">
     <h2>Current value</h2>
     <canvas id="gauge" width="300" height="300"></canvas>
   </div>
 
-  <!-- GRAPH TAB -->
+  <!-- graph tab -->
   <div class="tab-content" id="tab-graph">
     <h2>Graph selection</h2>
     <div id="chart-controls" class="ctrl-row">

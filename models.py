@@ -1,3 +1,5 @@
+# SQLAlchemy models and DB setup for storing measurement samples
+
 from sqlalchemy import create_engine, Column, Integer, DateTime
 from sqlalchemy.orm import declarative_base, sessionmaker
 from datetime import datetime

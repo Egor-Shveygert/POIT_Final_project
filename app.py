@@ -1,4 +1,5 @@
-# app.py
+# Flask app and SocketIO server for API, static files, and real-time communication
+
 from flask import Flask, request, jsonify, send_from_directory
 from flask_socketio import SocketIO, emit
 import serial_worker  # import module to sync current_ref
@@ -18,6 +19,7 @@ state = "idle"      # "open" | "running" | "stopped" | "closed"
 
 @app.route("/open", methods=["POST"])
 def open_route():
+    """Open serial worker thread and set state to 'open'."""
     print("[/open] Požiadavka prijatá")
     global state
     if state != "open":
@@ -27,7 +29,7 @@ def open_route():
 
 @app.route("/params", methods=["POST"])
 def params_route():
-    """nastavenie novej ref hodnoty a broadcast klientom"""
+    """Set new reference value and broadcast to all clients."""
     data = request.json
     new_ref = int(data.get("ref", 512))
     # send command to worker and update its internal target
@@ -40,6 +42,7 @@ def params_route():
 
 @app.route("/start", methods=["POST"])
 def start_route():
+    """Start data acquisition and set state to 'running'."""
     global state
     in_q.put({"start": True})
     in_q.put({"resume": True})
@@ -48,26 +51,25 @@ def start_route():
 
 @app.route("/stop", methods=["POST"])
 def stop_route():
+    """Stop data acquisition and set state to 'stopped'."""
     global state
     in_q.put({"stop": True})
     in_q.put({"pause": True})
-    #in_q.put({"ref": 0})
     import serial_worker
-    #serial_worker.current_ref = 0
-    #socketio.emit("ref_update", {"ref": 0})
     state = "stopped"
     return "OK"
 
 @app.route("/close", methods=["POST"])
 def close_route():
+    """Close serial worker thread and set state to 'closed'."""
     global state
-    #in_q.put({"stop": True})
     stop_worker()
     state = "closed"
     return "OK"
 
 @app.route("/history/db")
 def history_db():
+    """Return last N samples from the database."""
     N = int(request.args.get("n", 200))
     sess = SessionLocal()
     rows = sess.scalars(select(Sample).order_by(Sample.ts.desc()).limit(N))
@@ -75,6 +77,7 @@ def history_db():
 
 @app.route("/history/json")
 def history_json():
+    """Return last N samples from the JSON log."""
     N = int(request.args.get("n", 200))
     lines = pathlib.Path("data/logs.json").read_text().splitlines()[-N:]
     return "[" + ",".join(lines) + "]"
@@ -82,14 +85,14 @@ def history_json():
 # --- SocketIO realtime push ---
 @socketio.on("connect")
 def sock_connect():
+    """Send current state and reference value to newly connected client."""
     emit("state", {"state": state})
     emit("ref_update", {"ref": serial_worker.current_ref})
 
-
 def forward_thread():
+    """Forward samples from worker to all connected clients via SocketIO."""
     while True:
         data = out_q.get()
-        #print("[EMITUJEM SAMPLE]", data)
         socketio.emit("sample", data)
 
 threading.Thread(target=forward_thread, daemon=True).start()
@@ -98,6 +101,7 @@ threading.Thread(target=forward_thread, daemon=True).start()
 @app.route("/", defaults={"path": ""})
 @app.route("/<path:path>")
 def serve_spa(path):
+    """Serve static files or fallback to index.html for SPA routing."""
     if path and os.path.exists(os.path.join(app.static_folder, path)):
         return send_from_directory(app.static_folder, path)
     return send_from_directory(app.static_folder, "index.html")
@@ -109,12 +113,14 @@ import os, json
 
 @app.route("/sessions/db")
 def get_db_sessions():
+    """Return list of unique session IDs from the database."""
     sess = SessionLocal()
     ids = sess.query(Sample.session_id).distinct().order_by(Sample.session_id).all()
     return jsonify([id[0] for id in ids if id[0] is not None])
 
 @app.route("/sessions/json")
 def get_json_sessions():
+    """Return list of unique session IDs from the JSON log."""
     ids = set()
     if os.path.exists(JSON_PATH):
         with open(JSON_PATH) as f:
@@ -128,6 +134,7 @@ def get_json_sessions():
 
 @app.route("/session/db/<int:sid>")
 def get_db_session_data(sid):
+    """Return all samples for a given session ID from the database."""
     sess = SessionLocal()
     samples = sess.query(Sample).filter_by(session_id=sid).order_by(Sample.ts).all()
     return jsonify([{
@@ -139,6 +146,7 @@ def get_db_session_data(sid):
 
 @app.route("/session/json/<int:sid>")
 def get_json_session_data(sid):
+    """Return all samples for a given session ID from the JSON log."""
     data = []
     if os.path.exists(JSON_PATH):
         with open(JSON_PATH) as f:
@@ -153,7 +161,7 @@ def get_json_session_data(sid):
 
 
 if __name__ == "__main__":
-    print("spustam socketio.run...")
+    print("Starting socketio.run...")
     socketio.run(app, host="0.0.0.0", port=5000)
 
 

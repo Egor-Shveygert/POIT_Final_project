@@ -1,7 +1,4 @@
-
-// main.js – visual polish: button states & layout helpers
-
-// ===================== Socket.IO =====================
+// Socket.IO setup and event handlers
 const sock = io();
 
 sock.on("sample", gotSample);
@@ -10,9 +7,9 @@ sock.on("ref_update", data => {
   document.getElementById("ref").value = currentRef;
 });
 
-sock.on("connect", () => console.log("✅ Socket connected"));
+sock.on("connect", () => console.log("Socket connected"));
 
-// ===================== Globals =======================
+// Global variables and UI state
 let chart, gauge;
 let currentRef = 512;
 const MAX_POINTS = 200;
@@ -20,7 +17,7 @@ let currentMode = "live"; // "live" | "db" | "json"
 let gaugeDrawn = false;
 let commOpen   = false;   // UI state for Open / Close
 
-// ===================== Helpers =======================
+// Helper functions for HTTP requests and UI
 function post(url, data = {}) {
   fetch(url, {
     method: "POST",
