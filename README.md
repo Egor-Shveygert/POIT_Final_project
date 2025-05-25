@@ -64,12 +64,5 @@ POIT_Final_project/
 
 ## Notes
 
-- Do **not** commit `__pycache__` or other generated files to git.
 - All static files are served from the `static/` directory.
 - Data is logged both to a SQLite database and a JSON file for flexibility.
-
-## License
-
-MIT License
-
----
