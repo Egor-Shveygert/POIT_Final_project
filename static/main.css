@@ -1,0 +1,34 @@
+#log-wrapper {
+  max-height: 300px;
+  overflow-y: auto;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-top: 1em;
+}
+
+#tbl {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: monospace;
+}
+
+
+#tbl thead {
+  background-color: #f0f0f0;
+  position: sticky;
+  top: 0;
+}
+
+#tbl th, #tbl td {
+  padding: 6px 10px;
+  border-bottom: 1px solid #ddd;
+  text-align: center;
+}
+
+#tbl tbody tr:nth-child(odd) {
+  background-color: #f9f9f9;
+}
+
+#tbl tbody tr:hover {
+  background-color: #e0f7fa;
+}

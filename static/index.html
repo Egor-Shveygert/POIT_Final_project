@@ -1,0 +1,146 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Photo‑resistor Regulation</title>
+
+  <!-- libraries -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-gauges/gauge.min.js"></script>
+
+  <!-- styling -->
+  <style>
+    :root {
+      --blue:      #2196f3;
+      --blue-dark: #1976d2;
+      --grey:      #e0e0e0;
+      --grey-dark: #bdbdbd;
+    }
+
+    body { font-family: system-ui, sans-serif; margin: 0; padding: 0 1rem; }
+
+    /* generic buttons ---------------------------------------------- */
+    .btn {
+      padding: .45rem 1.25rem;
+      border: 0;
+      border-radius: .5rem;
+      background: var(--blue);
+      color: #fff;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background .15s;
+    }
+    .btn:hover      { background: var(--blue-dark); }
+    .btn:disabled   { background: var(--grey-dark); cursor: not-allowed; }
+    .btn.outline    { background: #fff; color: var(--blue); border: 2px solid var(--blue); }
+    .btn.outline:hover { background: var(--blue); color: #fff; }
+
+    /* TAB bar ------------------------------------------------------- */
+    .tabs { display: flex; gap: .5rem; margin: .75rem 0 1.25rem; }
+    
+	.tab-btn {
+      padding: .45rem 1.25rem;
+      border: 0;
+      border-radius: .5rem;
+      background: var(--grey);
+      color: #000;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background .15s;
+     }
+    .tab-btn:hover  { background: var(--grey-dark); }
+    .tab-btn.active { background: var(--blue-dark); color: #fff; }
+
+    /* TAB content --------------------------------------------------- */
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    /* layout helpers ------------------------------------------------ */
+    .ctrl-row { display: flex; flex-wrap: wrap; gap: .6rem; align-items: center; margin-bottom: 1rem; }
+    fieldset { border: 1px solid var(--grey-dark); border-radius: .75rem; padding: 1rem 1.2rem; margin-bottom: 1.5rem; }
+    legend   { padding: 0 .4rem; font-weight: 600; }
+
+    /* table --------------------------------------------------------- */
+    #log-wrapper { max-height: 280px; overflow: auto; }
+    table { border-collapse: collapse; width: 100%; font-size: .9rem; }
+    th, td { border: 1px solid #ccc; padding: .25rem .4rem; text-align: right; }
+    th { background: #f4f4f4; position: sticky; top: 0; }
+  </style>
+
+  <link rel="stylesheet" href="main.css">
+  <script src="main.js" defer></script>
+</head>
+
+<body>
+  <!-- TAB bar -->
+  <div class="tabs">
+    <button class="tab-btn active" data-target="tab-controls">Controls</button>
+    <button class="tab-btn"        data-target="tab-gauge">Gauge</button>
+    <button class="tab-btn"        data-target="tab-graph">Graph</button>
+  </div>
+
+  <!-- CONTROLS TAB -->
+  <div class="tab-content active" id="tab-controls">
+    <h1>Photo‑resistor regulation</h1>
+
+    <!-- communication block --------------------------------------- -->
+    <fieldset>
+      <legend>Communication</legend>
+      <div class="ctrl-row">
+        <button id="btnOpen"  class="btn outline">Open</button>
+        <button id="btnClose" class="btn outline" disabled>Close</button>
+      </div>
+    </fieldset>
+
+    <!-- data acquisition block ------------------------------------ -->
+    <fieldset>
+      <legend>Data capture</legend>
+      <div class="ctrl-row">
+        <label>Desired value:
+          <input type="number" id="ref" value="512" min="0" max="1023" style="width:5rem;">
+        </label>
+        <button id="btnStart" class="btn">Start</button>
+        <button id="btnStop"  class="btn" disabled>Stop</button>
+        
+      </div>
+    </fieldset>
+  </div>
+
+  <!-- GAUGE TAB -->
+  <div class="tab-content" id="tab-gauge">
+    <h2>Current value</h2>
+    <canvas id="gauge" width="300" height="300"></canvas>
+  </div>
+
+  <!-- GRAPH TAB -->
+  <div class="tab-content" id="tab-graph">
+    <h2>Graph selection</h2>
+    <div id="chart-controls" class="ctrl-row">
+      <button id="btnLive"  class="btn">Live graph</button>
+      <button id="btnDB"    class="btn outline">DB sessions</button>
+      <button id="btnJSON"  class="btn outline">JSON sessions</button>
+      <select id="sessionSelect" style="display:none;"></select>
+    </div>
+
+    <canvas id="chart" height="200"></canvas>
+
+    <h2>Graph logs</h2>
+    <div id="log-wrapper">
+      <table id="tbl">
+        <thead>
+          <tr>
+            <th>Time</th><th>LDR</th><th>PWM1</th><th>PWM2</th><th>Ref</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</body>
+</html>
+
+
+
+

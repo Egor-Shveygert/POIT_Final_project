@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Live Graph</title>
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <h1>Live Graph</h1>
+  <canvas id="chart" height="200"></canvas>
+
+  <script>
+    const sock = io();
+    const MAX_POINTS = 50;
+    const labels = [];
+    const ldrData = [];
+    const refData = [];
+
+    const chart = new Chart(document.getElementById("chart").getContext("2d"), {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [
+          { label: "LDR", borderWidth: 2, borderColor: 'blue', data: ldrData },
+          { label: "Ref", borderWidth: 2, borderColor: 'orange', data: refData }
+        ]
+      },
+      options: {
+        responsive: true,
+        animation: false,
+        scales: {
+          y: { suggestedMin: 0, suggestedMax: 1023 }
+        }
+      }
+    });
+
+    sock.on("sample", data => {
+      const now = new Date().toLocaleTimeString();
+      labels.push(now);
+      ldrData.push(data.ldr);
+      refData.push(data.ref);
+
+      if (labels.length > MAX_POINTS) {
+        labels.shift();
+        ldrData.shift();
+        refData.shift();
+      }
+
+      chart.update();
+    });
+  </script>
+</body>
+</html>
